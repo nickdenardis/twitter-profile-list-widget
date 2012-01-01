@@ -17,9 +17,14 @@ class Twitter_Profile_List_Widget extends WP_Widget {
 	 * Displays the widget form in the admin panel
 	 */
 	function form( $instance ) {
+		$title = esc_attr( $instance['title'] );
 		$screen_name = esc_attr( $instance['screen_name'] );
 		$list = esc_attr( $instance['list'] );
 		?>
+		<p>
+			<label for="<?php echo $this->get_field_id( 'title' ); ?>">Title:</label>
+			<input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo $title; ?>" />
+		</p>
 		<p>
 			<label for="<?php echo $this->get_field_id( 'screen_name' ); ?>">Screen name:</label>
 			<input class="widefat" id="<?php echo $this->get_field_id( 'screen_name' ); ?>" name="<?php echo $this->get_field_name( 'screen_name' ); ?>" type="text" value="<?php echo $screen_name; ?>" />
@@ -36,6 +41,11 @@ class Twitter_Profile_List_Widget extends WP_Widget {
 	 */
 	function widget( $args, $instance ) {
 		echo $args['before_widget'];
+		
+		//https://dev.twitter.com/docs/api/1/get/lists/members
+		if ($instance['title'] != ''){
+			echo '<h2 class="widgettitle">' . htmlspecialchars(stripslashes($instance['title'])) . '</h2>';
+		}
 		?>
 		<?php echo $instance['screen_name']; ?>/<?php echo $instance['list']; ?>
 		<?php
