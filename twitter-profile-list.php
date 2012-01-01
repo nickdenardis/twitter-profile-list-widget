@@ -81,7 +81,9 @@ class Twitter_Profile_List_Widget extends WP_Widget {
 		}else{
 			// Fields to display: name, profile_image_url, screen_name, profile_image_url_https
 			foreach ($list_members->users as $user){
-				echo '<li>' . $user->screen_name . '</li>';
+				echo '<li>
+				<a href="http://twitter.com/' . $user->screen_name . '"><img src="' . $user->profile_image_url . '" height="48" width="48" alt="Profile photo of ' . $user->name . '" /></a> 
+				<a href="http://twitter.com/' . $user->screen_name . '">' . $user->name . '</a></li>';
 			}
 		}
 		
