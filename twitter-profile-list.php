@@ -36,6 +36,16 @@ class Twitter_Profile_List_Widget extends WP_Widget {
 		<?php
 	}
 	
+	function update($new_instance, $old_instance){
+		// Set the new information
+		$instance = $new_instance;
+
+		// Clear the existing list cache
+		$this->clear_transient('twitter_list');
+		
+		return $instance;
+	}
+	
 	/*
 	 * Renders the widget in the sidebar
 	 */
@@ -47,6 +57,8 @@ class Twitter_Profile_List_Widget extends WP_Widget {
 		
 		if ($instance['title'] != '')
 			echo '<h2 class="widgettitle">' . htmlspecialchars(stripslashes($instance['title'])) . '</h2>';
+		
+		// Make sure the Twitter name and list are defined
 		
 		// Get the list of members
 		$list = $this->_get('https://api.twitter.com/1/lists/members.json?slug=' . $instance['list'] . '&owner_screen_name=' . $instance['screen_name'] . '&skip_status=1&include_entities=0');
@@ -92,6 +104,7 @@ class Twitter_Profile_List_Widget extends WP_Widget {
 	function _get($url, $use_cache=true){
 		// Get any existing copy of our transient data
 		if ($use_cache === true && (false === ($contents = get_transient('twitter_list')))){
+			// Setup the connection
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, $url);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -101,9 +114,11 @@ class Twitter_Profile_List_Widget extends WP_Widget {
 			curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']); 
 			curl_setopt($ch, CURLOPT_REFERER, 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']); 
 			
+			// Get the contents of the call
 			$contents = curl_exec ($ch);
 			curl_close ($ch);
 		    
+		    // Store the list for 4 hours
 		    set_transient('twitter_list', $contents, 60*60*4);
 		}
 		
