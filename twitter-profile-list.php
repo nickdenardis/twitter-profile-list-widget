@@ -104,7 +104,7 @@ class Twitter_Profile_List_Widget extends WP_Widget {
 			$contents = curl_exec ($ch);
 			curl_close ($ch);
 		    
-		    set_transient('twitter_list', $contents);
+		    set_transient('twitter_list', $contents, 60*60*4);
 		}
 		
 		return $contents;
