@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Twitter Profile List Widget
-Description: Adds a list of twitter users with photos to the widget column on a Wordpress blog.
+Description: Adds a list of twitter users sorted by username with photos to the widget column on a Wordpress blog.
 Version: 1.0
 Author: Wayne State Web Team
 Author URI: http://blogs.wayne.edu/web/
@@ -28,7 +28,7 @@ if (!function_exists('BasicCurl')){
 
 class Twitter_Profile_List_Widget extends WP_Widget {
 	function __construct() {
-		parent::__construct(false, $name = 'Twitter Profile List Widget', array( 'description' => 'Adds a list of twitter users with photos to the widget column on a Wordpress blog.' ) );
+		parent::__construct(false, $name = 'Twitter Profile List Widget', array( 'description' => 'Adds a list of twitter users sorted by username with photos to the widget column on a Wordpress blog.' ) );
 	}
 	
 	/*
@@ -67,7 +67,7 @@ class Twitter_Profile_List_Widget extends WP_Widget {
 			echo '<h2 class="widgettitle">' . htmlspecialchars(stripslashes($instance['title'])) . '</h2>';
 		
 		// Get the list of members
-		$list = BasicCurl('https://api.twitter.com/1/lists/members.json?slug=' . $instance['list'] . '&owner_screen_name=' . $instance['screen_name']);
+		$list = BasicCurl('https://api.twitter.com/1/lists/members.json?slug=' . $instance['list'] . '&owner_screen_name=' . $instance['screen_name'] . '&skip_status=1&include_entities=0');
 		
 		// Decode the list
 		$list_members = json_decode($list);
@@ -79,8 +79,19 @@ class Twitter_Profile_List_Widget extends WP_Widget {
 		if (isset($list_members->error)){
 			echo '<li class="error notfound">Twitter list not found.</li>';
 		}else{
-			// Fields to display: name, profile_image_url, screen_name, profile_image_url_https
+			$users = array();
+			
+			// Localize each user
 			foreach ($list_members->users as $user){
+				$users[$user->screen_name] = $user;
+			}
+			
+			// Sort the users
+			ksort($users);
+			
+			// Display the users
+			// Fields to display: name, profile_image_url, screen_name, profile_image_url_https
+			foreach($users as $user){
 				echo '<li>
 				<a href="http://twitter.com/' . $user->screen_name . '"><img src="' . $user->profile_image_url . '" height="48" width="48" alt="Profile photo of ' . $user->name . '" /></a> 
 				<a href="http://twitter.com/' . $user->screen_name . '">' . $user->name . '</a></li>';
