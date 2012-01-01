@@ -26,11 +26,11 @@ class Twitter_Profile_List_Widget extends WP_Widget {
 			<input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo $title; ?>" />
 		</p>
 		<p>
-			<label for="<?php echo $this->get_field_id( 'screen_name' ); ?>">Screen name:</label>
+			<label for="<?php echo $this->get_field_id( 'screen_name' ); ?>">Twitter Username:</label>
 			<input class="widefat" id="<?php echo $this->get_field_id( 'screen_name' ); ?>" name="<?php echo $this->get_field_name( 'screen_name' ); ?>" type="text" value="<?php echo $screen_name; ?>" />
 		</p>
 		<p>
-			<label for="<?php echo $this->get_field_id( 'list' ); ?>">List:</label>
+			<label for="<?php echo $this->get_field_id( 'list' ); ?>">List Name:</label>
 			<input class="widefat" id="<?php echo $this->get_field_id( 'list' ); ?>" name="<?php echo $this->get_field_name( 'list' ); ?>" type="text" value="<?php echo $list; ?>" />
 		</p>
 		<?php
@@ -90,7 +90,7 @@ class Twitter_Profile_List_Widget extends WP_Widget {
 				// Fields to display: name, profile_image_url, screen_name, profile_image_url_https
 				foreach($users as $user){
 					echo '<li>
-					<a href="http://twitter.com/' . $user->screen_name . '"><img src="' . $user->profile_image_url . '" height="48" width="48" alt="Profile photo of ' . $user->name . '" /></a> 
+					<a href="http://twitter.com/' . $user->screen_name . '" class="profile-pic"><img src="' . $user->profile_image_url . '" height="48" width="48" alt="Profile photo of ' . $user->name . '" /></a> 
 					<a href="http://twitter.com/' . $user->screen_name . '">' . $user->name . '</a></li>';
 				}
 			}
@@ -105,9 +105,9 @@ class Twitter_Profile_List_Widget extends WP_Widget {
 	/*
 	 * CURL GET function to call the Twitter API
 	 */
-	function _get($url, $use_cache=true){
+	function _get($url){
 		// Get any existing copy of our transient data
-		if ($use_cache === true && (false === ($contents = get_transient('twitter_list')))){
+		if (false === ($contents = get_transient('twitter_list'))){
 			// Setup the connection
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, $url);
