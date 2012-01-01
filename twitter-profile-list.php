@@ -8,6 +8,24 @@ Author URI: http://blogs.wayne.edu/web/
 License: GPLv2
 */
 
+if (!function_exists('BasicCurl')){
+	function BasicCurl($url){		
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
+		curl_setopt($ch, CURLOPT_HEADER, 0);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 0);
+		curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']); 
+		curl_setopt($ch, CURLOPT_REFERER, 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']); 
+		
+		$contents = curl_exec ($ch);
+		curl_close ($ch);
+		
+		return $contents;
+	}
+}
+
 class Twitter_Profile_List_Widget extends WP_Widget {
 	function __construct() {
 		parent::__construct(false, $name = 'Twitter Profile List Widget', array( 'description' => 'Adds a list of twitter users with photos to the widget column on a Wordpress blog.' ) );
@@ -42,13 +60,34 @@ class Twitter_Profile_List_Widget extends WP_Widget {
 	function widget( $args, $instance ) {
 		echo $args['before_widget'];
 		
-		//https://dev.twitter.com/docs/api/1/get/lists/members
-		if ($instance['title'] != ''){
+		// Twitter API Call Docs
+		// https://dev.twitter.com/docs/api/1/get/lists/members
+		
+		if ($instance['title'] != '')
 			echo '<h2 class="widgettitle">' . htmlspecialchars(stripslashes($instance['title'])) . '</h2>';
+		
+		// Get the list of members
+		$list = BasicCurl('https://api.twitter.com/1/lists/members.json?slug=' . $instance['list'] . '&owner_screen_name=' . $instance['screen_name']);
+		
+		// Decode the list
+		$list_members = json_decode($list);
+		
+		// Start the list
+		echo '<ul>';
+		
+		// Check to see if there is an error
+		if (isset($list_members->error)){
+			echo '<li class="error notfound">Twitter list not found.</li>';
+		}else{
+			// Fields to display: name, profile_image_url, screen_name, profile_image_url_https
+			foreach ($list_members->users as $user){
+				echo '<li>' . $user->screen_name . '</li>';
+			}
 		}
-		?>
-		<?php echo $instance['screen_name']; ?>/<?php echo $instance['list']; ?>
-		<?php
+		
+		// End the list
+		echo  '</ul>';
+		
 		echo $args['after_widget'];
 	}
 };
