@@ -8,24 +8,6 @@ Author URI: http://blogs.wayne.edu/web/
 License: GPLv2
 */
 
-if (!function_exists('BasicCurl')){
-	function BasicCurl($url){		
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
-		curl_setopt($ch, CURLOPT_HEADER, 0);
-		curl_setopt($ch, CURLOPT_TIMEOUT, 0);
-		curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']); 
-		curl_setopt($ch, CURLOPT_REFERER, 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']); 
-		
-		$contents = curl_exec ($ch);
-		curl_close ($ch);
-		
-		return $contents;
-	}
-}
-
 class Twitter_Profile_List_Widget extends WP_Widget {
 	function __construct() {
 		parent::__construct(false, $name = 'Twitter Profile List Widget', array( 'description' => 'Adds a list of twitter users sorted by username with photos to the widget column on a Wordpress blog.' ) );
@@ -67,7 +49,7 @@ class Twitter_Profile_List_Widget extends WP_Widget {
 			echo '<h2 class="widgettitle">' . htmlspecialchars(stripslashes($instance['title'])) . '</h2>';
 		
 		// Get the list of members
-		$list = BasicCurl('https://api.twitter.com/1/lists/members.json?slug=' . $instance['list'] . '&owner_screen_name=' . $instance['screen_name'] . '&skip_status=1&include_entities=0');
+		$list = $this->_get('https://api.twitter.com/1/lists/members.json?slug=' . $instance['list'] . '&owner_screen_name=' . $instance['screen_name'] . '&skip_status=1&include_entities=0');
 		
 		// Decode the list
 		$list_members = json_decode($list);
@@ -102,6 +84,25 @@ class Twitter_Profile_List_Widget extends WP_Widget {
 		echo  '</ul>';
 		
 		echo $args['after_widget'];
+	}
+	
+	function _get($url, $use_cache=true){		
+		//set_transient($this->name, $data, $this->lifetime);
+		//get_transient($this->name);
+		
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
+		curl_setopt($ch, CURLOPT_HEADER, 0);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 0);
+		curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']); 
+		curl_setopt($ch, CURLOPT_REFERER, 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']); 
+		
+		$contents = curl_exec ($ch);
+		curl_close ($ch);
+		
+		return $contents;
 	}
 };
 
