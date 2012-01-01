@@ -86,23 +86,35 @@ class Twitter_Profile_List_Widget extends WP_Widget {
 		echo $args['after_widget'];
 	}
 	
-	function _get($url, $use_cache=true){		
-		//set_transient($this->name, $data, $this->lifetime);
-		//get_transient($this->name);
-		
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
-		curl_setopt($ch, CURLOPT_HEADER, 0);
-		curl_setopt($ch, CURLOPT_TIMEOUT, 0);
-		curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']); 
-		curl_setopt($ch, CURLOPT_REFERER, 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']); 
-		
-		$contents = curl_exec ($ch);
-		curl_close ($ch);
+	/*
+	 * CURL GET function to call the Twitter API
+	 */
+	function _get($url, $use_cache=true){
+		// Get any existing copy of our transient data
+		if ($use_cache === true && (false === ($contents = get_transient('twitter_list')))){
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $url);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
+			curl_setopt($ch, CURLOPT_HEADER, 0);
+			curl_setopt($ch, CURLOPT_TIMEOUT, 0);
+			curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']); 
+			curl_setopt($ch, CURLOPT_REFERER, 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']); 
+			
+			$contents = curl_exec ($ch);
+			curl_close ($ch);
+		    
+		    set_transient('twitter_list', $contents);
+		}
 		
 		return $contents;
+	}
+	
+	/*
+	 * Clears the transient data
+	 */
+	function clear_transient($name){
+		delete_transient($name);
 	}
 };
 
