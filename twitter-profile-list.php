@@ -90,7 +90,7 @@ class Twitter_Profile_List_Widget extends WP_Widget {
 				// Fields to display: name, profile_image_url, screen_name, profile_image_url_https
 				foreach($users as $user){
 					echo '<li>
-					<a href="http://twitter.com/' . $user->screen_name . '" class="profile-pic"><img src="' . $user->profile_image_url . '" height="48" width="48" alt="Profile photo of ' . $user->name . '" /></a> 
+					<a href="http://twitter.com/' . $user->screen_name . '" class="profile-pic"><img src="' . (($_SERVER['SERVER_PORT'] == 443)?$user->profile_image_url_https:$user->profile_image_url) . '" height="48" width="48" alt="Profile photo of ' . $user->name . '" /></a> 
 					<a href="http://twitter.com/' . $user->screen_name . '">' . $user->name . '</a></li>';
 				}
 			}
