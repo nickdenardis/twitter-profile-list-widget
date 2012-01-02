@@ -41,3 +41,7 @@ Thanks to
 ---------
 * [Nick DeNardis](http://nickdenardis.com/), for the initial codebase.
 * [Nick West](http://nickwest.me/), for setting up a rock solid WP Multisite installation at Wayne State to test on.
+
+Author
+---------
+[Wayne State University Web Team](http://blogs.wayne.edu/web/)
