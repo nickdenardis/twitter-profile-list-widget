@@ -93,6 +93,8 @@ class Twitter_Profile_List_Widget extends WP_Widget {
 					<a href="http://twitter.com/' . $user->screen_name . '" class="profile-pic"><img src="' . (($_SERVER['SERVER_PORT'] == 443)?$user->profile_image_url_https:$user->profile_image_url) . '" height="48" width="48" alt="Profile photo of ' . $user->name . '" /></a> 
 					<a href="http://twitter.com/' . $user->screen_name . '">' . $user->name . '</a></li>';
 				}
+				
+				//echo '<li class="last"><a href="http://twitter.com/' . $instance['screen_name'] . '/' . $instance['list'] . '">View full list</a></li>';
 			}
 			
 			// End the list
